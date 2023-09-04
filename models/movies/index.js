@@ -8,6 +8,7 @@ const updateMovies = movies => fs.writeFile(moviesPath, JSON.stringify(movies, n
 
 export const getAllMovies = async () => {
     const data = await fs.readFile(moviesPath);
+    console.log (data)
     return JSON.parse(data);
 }
 
