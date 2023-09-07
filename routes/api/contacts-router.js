@@ -1,23 +1,9 @@
 import express from "express";
-/*import Joi from "joi";*/
 import contactAddSchema  from "../../schemas/joi.js";
 import contactsService from "../../controllers/contacts.js";
 import { HttpError } from "../../helpers/index.js";
 
 const contactsRouter = express.Router();
-
-/*const contactAddSchema = Joi.object({
-    name: Joi.string().required().messages({
-        "any.required": `"name" must be exist`
-    }),
-    email: Joi.string().required().messages({
-        "any.required": `"email" must be exist`
-    }),
-    phone: Joi.string().required().messages({
-        "any.required": `"phone" must be exist`
-    }),
-}) */
-
 
 contactsRouter.get('/', async (req, res, next) => {
   try {
