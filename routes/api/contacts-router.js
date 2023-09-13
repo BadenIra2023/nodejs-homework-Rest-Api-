@@ -1,84 +1,22 @@
+
 import express from "express";
-import contactAddSchema  from "../../schemas/joi.js";
-import contactsService from "../../controllers/contacts.js";
-import { HttpError } from "../../helpers/index.js";
+import contactsService from "../../controllers/contacts.js"; 
+import contactValidation from "../../middlewares/contact-validation.js"; 
+import isValidId from "../../middlewares/isValidId.js"; 
 
 const contactsRouter = express.Router();
 
-contactsRouter.get('/', async (req, res, next) => {
-  try {
-  const result = await contactsService.listContacts();
-    res.json(result);
-  }
-  catch (error) {
-        next(error);  
-  } 
-})
+contactsRouter.get("/", contactsService.listContacts);
 
-contactsRouter.get('/:contactId', async (req, res, next) => {
-   try {
-     const {contactId} = req.params;
-     const result = await contactsService.getContactById(contactId);
-      if(!result) {
-            throw HttpError(404, `Movie with id=${contactId} not found`);
-          }
-        res.json(result)
-  }
-  catch(error) {
-        next(error);
-    }
-  
-})
+contactsRouter.get("/:id", isValidId, contactsService.getContactById);
 
-contactsRouter.post('/', async (req, res, next) => {
- try {
-        const {error} = contactAddSchema.validate(req.body);
-        if(error) {
-            throw HttpError(400, error.message);
-        }
-        const result = await contactsService.addContact(req.body);
-        res.status(201).json(result);
-    }
-    catch(error) {
-        next(error);
-    }
-})
+contactsRouter.post("/",contactValidation.contactValidate, contactsService.addContact);
 
-contactsRouter.delete('/:contactId', async (req, res, next) => {
-  try {
-        const {contactId} = req.params;
-        const result = await contactsService.removeContact(contactId);
-         if(!result) {
-            throw HttpError(404, `Movie with id=${contactId} not found`);
-        }
-        res.json({
-            message: "Delete success"
-        })
-    }
-    catch(error) {
-        next(error);
-    }
-  res.json({ message: 'template message' })
-})
+contactsRouter.delete("/:id", isValidId,contactsService.removeContact);
+ 
+contactsRouter.put("/:id", isValidId, contactsService.updateContactById);
 
-contactsRouter.put('/:id', async (req, res, next) => {
-  try {
-    const { error } = contactAddSchema.validate(req.body);
-     if(error) {
-            throw HttpError(400, error.message);
-        }
-  const { id } = req.params;
-    const result = await contactsService.updateContactById(id, req.body);
-    if(!result) {
-            throw HttpError(404, `Movie with id=${id} not found`);
-        }
+contactsRouter.patch("/:id/favorite", isValidId, contactValidation.contactFavoritValidate,
+contactsService.updateStatusContact);
 
-        res.json(result);
-  }
-  catch(error) {
-        next(error);
-    }
-
-})
-
-export default contactsRouter;
+export default contactsRouter; 

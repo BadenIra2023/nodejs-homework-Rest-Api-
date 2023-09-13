@@ -1,57 +1,57 @@
-import path from "path";
-import fs from "fs/promises";
-import { nanoid } from "nanoid";
-
-const contactsPath = path.resolve("models", "contacts", "contacts.json");
-
-const updateContacts = contacts => fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
-
-const listContacts = async () => {
-  const data = await fs.readFile(contactsPath);
-    return JSON.parse(data);
-}
-
-const getContactById = async (contactId) => {
-const contacts = await listContacts();
-const result = contacts.find(contact => contact.id === contactId);
-return result || null;
-}
+import { HttpError } from "../helpers/index.js";
+import { ctrlWrapper } from "../decorators/index.js";
+import Contact from "../models/Contact.js";
 
 
-const removeContact = async (contactId) => {
-  const contacts = await listContacts();
-const index = contacts.findIndex(contact => contact.id === contactId);
-  if (index === -1) {
-    return null;
+const listContacts = async (req, res) => {
+const data = await Contact.find();
+ res.status(200).json(data);
+};
+
+const getContactById = async (req, res) => {
+const { id } = req.params;
+const result = await Contact.findById(id);
+   if (!result) {
+    throw HttpError(404, `Contact with id=${id} not found`);
   }
-const [result] = contacts.splice(index, 1);
-await updateContacts(contacts);
-return result;
+  res.status(200).json(result);
 }
 
-const addContact = async ({name, email, phone}) => {
-const contacts = await listContacts();
-const newContact = { id: nanoid(), name, email, phone};
-contacts.push(newContact);
-await updateContacts(contacts);
-return newContact;
-}
-
-const updateContactById = async (id, body) => {
-  const contacts = await listContacts();
-  const index = contacts.findIndex(contact => contact.id === id);
-  if (index === -1) {
-    return null;
+const removeContact = async (req, res) => {
+  const { id } = req.params;
+  const result = await Contact.findByIdAndDelete(id);
+  if (!result) {
+    throw HttpError(404, `Contact with id=${id} not found`);
   }
- contacts[index] = {id, ...body};
- await updateContacts(contacts);
- return  contacts[index];
-}
+  res.status(200).json({ message: "contact deleted" });
+};
+
+const addContact = async (req, res) => {
+  const newContact = await Contact.create(req.body);
+  res.status(201).json(newContact);
+};
+
+const updateContactById = async (req, res) => {
+  const { id } = req.params;
+  const result = await Contact.findByIdAndUpdate(id, req.body, {new: true,});
+  if (!result) {
+    throw HttpError(404, `Contact with id=${id} not found`);
+  }
+  res.status(200).json(result);
+};
+const updateStatusContact = async (req, res) => {
+  const { id } = req.params;
+  const result = await Contact.findByIdAndUpdate(id, req.body, {new: true,});
+  if (!result) {
+    throw HttpError(404, `Contact with id=${id} not found`);
+  }
+  res.status(200).json(result);
+};
 
 export default {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  updateContactById,
-}
+  listContacts: ctrlWrapper(listContacts),
+  addContact: ctrlWrapper(addContact),
+  getContactById: ctrlWrapper(getContactById),
+  updateContactById: ctrlWrapper(updateContactById),
+  removeContact: ctrlWrapper(removeContact),
+  updateStatusContact: ctrlWrapper(updateStatusContact),}
