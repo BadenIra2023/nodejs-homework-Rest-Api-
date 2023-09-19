@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
 import { handleSaveError, runValidateAtUpdate } from "../models/hooks.js";
 import Joi from "joi"; /* не забыть убрать все в user-joi*/
+import { token } from "morgan";
 
 const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
@@ -19,7 +20,8 @@ const userSchema = new Schema({
         type: String,
         minlength: 7,
         required: true,
-   }
+    },
+    token: {type: String,}
 }, { versionKey: false, timestamps: true });
 
 userSchema.post("save", handleSaveError);

@@ -2,8 +2,11 @@ import express from "express";
 import contactsService from "../../controllers/index.js"; 
 import contactValidation from "../../middlewares/contact-validation.js"; 
 import isValidId from "../../middlewares/isValidId.js"; 
+import authenticate from "../../middlewares/authenticate.js";
 
 const contactsRouter = express.Router();
+
+contactsRouter.use(authenticate);
 
 contactsRouter.get("/", contactsService.listContacts);
 
