@@ -8,8 +8,8 @@ const authRouter = express.Router();
 const userSingUpValidate = validateBody(userSchema.userSingUpSchema);
 const userSingInValidate = validateBody(userSchema.userSingInSchema);
 
-authRouter.post("/singup", userSingUpValidate, authControllers.singUp);
-authRouter.post("/singin", userSingInValidate, authControllers.singIn);
+authRouter.post("/register", userSingUpValidate, authControllers.singUp);
+authRouter.post("/login", userSingInValidate, authControllers.singIn);
 authRouter.get("/current", authenticate, authControllers.getCurrent);
-authRouter.post("/singout", authenticate, authControllers.singout);
+authRouter.post("/logout", authenticate, authControllers.logout);
 export default authRouter;

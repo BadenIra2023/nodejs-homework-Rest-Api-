@@ -4,6 +4,7 @@ import Joi from "joi"; /* не забыть убрать все в user-joi*/
 import { token } from "morgan";
 
 const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+const subScroll = ["starter", "pro", "business"];
 
 const userSchema = new Schema({
     username: {
@@ -14,13 +15,18 @@ const userSchema = new Schema({
         type: String,
         match: emailRegex,
         unique: true,
-        required: true,
+        required: [true, 'Email is required'],
     },
     password: {
         type: String,
         minlength: 7,
-        required: true,
+        required: [true, 'Set password for user'],
     },
+    subscription: {
+    type: String,
+    enum: subScroll,
+    default: "starter",
+  },
     token: {type: String,}
 }, { versionKey: false, timestamps: true });
 
@@ -34,6 +40,7 @@ export const userSingUpSchema = Joi.object ({
     username: Joi.string().required(),
     email: Joi.string().pattern(emailRegex).required(),
     password: Joi.string().min(7).required(),
+    subscription: Joi.string().valid(...subScroll).required(),
 })
 
 export const userSingInSchema = Joi.object({
