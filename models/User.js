@@ -22,6 +22,11 @@ const userSchema = new Schema({
         minlength: 7,
         required: [true, 'Set password for user'],
     },
+    avatarUrl: {
+      type: String,
+        required: true,
+    },
+    
     subscription: {
     type: String,
     enum: subScroll,
