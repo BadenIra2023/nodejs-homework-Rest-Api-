@@ -32,7 +32,15 @@ const userSchema = new Schema({
     enum: subScroll,
     default: "starter",
   },
-    token: {type: String,}
+  token: { type: String, },
+  verify: {
+    type: Boolean,
+    default: "false"
+  },
+  verificationToken: {
+    type: String,
+    required: [true, 'Verify token is required'],
+  }
 }, { versionKey: false, timestamps: true });
 
 userSchema.post("save", handleSaveError);
@@ -52,5 +60,9 @@ export const userSingInSchema = Joi.object({
   email: Joi.string().pattern(emailRegex).required(),
   password: Joi.string().min(7).required(),
 });
+export const userEmailSchema = Joi.object({
+  email: Joi.string().pattern(emailRegex).required(),
+});
+
 
 export default User;
